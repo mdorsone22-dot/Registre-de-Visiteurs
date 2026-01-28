@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Registre de Visiteurs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #ecf0f1;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-box h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 35px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #bdc3c7;
+            background: white;
+            font-size: 15px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #2c3e50;
+            color: white;
+            padding: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            background: #34495e;
+        }
+
+        .error-msg {
+            background: #e74c3c;
+            color: white;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-container {
+            display: none;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #2c3e50;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .stat-card .number {
+            font-size: 42px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+
+        .filters {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .filters h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            font-size: 14px;
+        }
+
+        .visitors-section {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            color: #2c3e50;
+        }
+
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .export-btn:hover {
+            background: #229954;
+        }
+
+        .visitor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .visitor-table th {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .visitor-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .visitor-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .visitor-card {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .visitor-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .visitor-card-header h3 {
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .visitor-date {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .visitor-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            padding: 8px 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #34495e;
+            min-width: 150px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .visitor-details {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-container" id="login-screen">
+        <div class="login-box">
+            <h1>Administration</h1>
+            <p>Registre de Visiteurs - Famille MEGA</p>
+            
+            <div id="error-msg" class="error-msg"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="Entrez le mot de passe" autofocus>
+                </div>
+                <button type="submit" class="login-btn">Se Connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div class="admin-container" id="admin-dashboard">
+        <div class="header">
+            <div class="header-content">
+                <h1>Tableau de Bord - Registre de Visiteurs</h1>
+                <button class="logout-btn" onclick="logout()">Déconnexion</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- STATISTICS -->
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Visiteurs</h3>
+                    <div class="number" id="total-visitors">0</div>
+                    <div class="label">Depuis le début</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Cette Semaine</h3>
+                    <div class="number" id="week-visitors">0</div>
+                    <div class="label">7 derniers jours</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Nouveaux Convertis</h3>
+                    <div class="number" id="new-converts">0</div>
+                    <div class="label">N'ont pas encore accepté Jésus</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Futurs Membres</h3>
+                    <div class="number" id="potential-members">0</div>
+                    <div class="label">Intéressés à devenir membres</div>
+                </div>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters">
+                <h2>Filtres</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Période</label>
+                        <select id="filter-period" onchange="applyFilters()">
+                            <option value="all">Tous</option>
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week">Cette semaine</option>
+                            <option value="month">Ce mois</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Statut Spirituel</label>
+                        <select id="filter-jesus" onchange="applyFilters()">
+                            <option value="all">Tous</option>
+                            <option value="oui">A accepté Jésus</option>
+                            <option value="non">Pas encore accepté</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Intérêt Membre</label>
+                        <select id="filter-member" onchange="applyFilters()">
+                            <option value="all">Tous</option>
+                            <option value="oui">Oui</option>
+                            <option value="non">Non</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Recherche</label>
+                        <input type="text" id="search" placeholder="Nom, prénom..." oninput="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISITORS LIST -->
+            <div class="visitors-section">
+                <div class="section-header">
+                    <h2>Liste des Visiteurs</h2>
+                    <button class="export-btn" onclick="exportToCSV()">Exporter en CSV</button>
+                </div>
+                <div id="visitors-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allVisitors = [];
+        let filteredVisitors = [];
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            console.log('Mot de passe saisi:', password); // Pour debug
+            console.log('Mot de passe attendu: admin123');
+            
+            // Change this password as needed
+            if (password === 'admin123') {
+                console.log('Connexion réussie!');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                loadDashboard();
+            } else {
+                console.log('Mot de passe incorrect');
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = 'Mot de passe incorrect. Le mot de passe correct est: admin123';
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        // Logout function
+        function logout() {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('password').value = '';
+        }
+
+        // Load dashboard data
+        function loadDashboard() {
+            allVisitors = JSON.parse(localStorage.getItem('visitors') || '[]');
+            filteredVisitors = [...allVisitors];
+            updateStatistics();
+            displayVisitors();
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = allVisitors.length;
+            const today = new Date().toLocaleDateString('fr-CA');
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-CA');
+            
+            const thisWeek = allVisitors.filter(v => v.date >= weekAgo).length;
+            const newConverts = allVisitors.filter(v => v.jesus === 'Non').length;
+            const potentialMembers = allVisitors.filter(v => v.membre === 'Oui').length;
+
+            document.getElementById('total-visitors').textContent = total;
+            document.getElementById('week-visitors').textContent = thisWeek;
+            document.getElementById('new-converts').textContent = newConverts;
+            document.getElementById('potential-members').textContent = potentialMembers;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const period = document.getElementById('filter-period').value;
+            const jesus = document.getElementById('filter-jesus').value;
+            const member = document.getElementById('filter-member').value;
+            const search = document.getElementById('search').value.toLowerCase();
+
+            filteredVisitors = allVisitors.filter(visitor => {
+                // Period filter
+                if (period !== 'all') {
+                    const visitorDate = new Date(visitor.date);
+                    const now = new Date();
+                    
+                    if (period === 'today') {
+                        if (visitor.date !== now.toLocaleDateString('fr-CA')) return false;
+                    } else if (period === 'week') {
+                        const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                        if (visitorDate < weekAgo) return false;
+                    } else if (period === 'month') {
+                        const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                        if (visitorDate < monthAgo) return false;
+                    }
+                }
+
+                // Jesus filter
+                if (jesus !== 'all' && visitor.jesus.toLowerCase() !== jesus) return false;
+
+                // Member filter
+                if (member !== 'all' && visitor.membre.toLowerCase() !== member) return false;
+
+                // Search filter
+                if (search) {
+                    const fullName = `${visitor.prenom} ${visitor.nom}`.toLowerCase();
+                    if (!fullName.includes(search)) return false;
+                }
+
+                return true;
+            });
+
+            displayVisitors();
+        }
+
+        // Display visitors
+        function displayVisitors() {
+            const container = document.getElementById('visitors-list');
+            
+            if (filteredVisitors.length === 0) {
+                container.innerHTML = '<div class="no-data">Aucun visiteur trouvé avec ces critères.</div>';
+                return;
+            }
+
+            container.innerHTML = filteredVisitors
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .map(visitor => `
+                    <div class="visitor-card">
+                        <div class="visitor-card-header">
+                            <h3>${visitor.prenom} ${visitor.nom}</h3>
+                            <div class="visitor-date">
+                                ${visitor.date} à ${visitor.heure || 'N/A'}
+                            </div>
+                        </div>
+                        <div class="visitor-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Sexe:</span>
+                                <span class="detail-value">${visitor.sexe}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Téléphone:</span>
+                                <span class="detail-value">${visitor.telephone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Courriel:</span>
+                                <span class="detail-value">${visitor.courriel}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Adresse:</span>
+                                <span class="detail-value">${visitor.adresse}, ${visitor.ville || ''} ${visitor.code_postal}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">A accepté Jésus:</span>
+                                <span class="detail-value">
+                                    <span class="badge ${visitor.jesus === 'Oui' ? 'badge-success' : 'badge-warning'}">
+                                        ${visitor.jesus}
+                                    </span>
+                                </span>
+                            </div>
+                            ${visitor.followup ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Suivi spirituel:</span>
+                                <span class="detail-value">${visitor.followup}</span>
+                            </div>
+                            ` : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Devenir membre:</span>
+                                <span class="detail-value">
+                                    <span class="badge ${visitor.membre === 'Oui' ? 'badge-success' : 'badge-info'}">
+                                        ${visitor.membre || 'Non spécifié'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Communication:</span>
+                                <span class="detail-value">${visitor.communication}</span>
+                            </div>
+                            ${visitor.connaissance ? `
+                            <div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Comment nous a connu:</span>
+                                <span class="detail-value">${visitor.connaissance}</span>
+                            </div>
+                            ` : ''}
+                            ${visitor.reference ? `
+                            <div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Référence:</span>
+                                <span class="detail-value">${visitor.reference}</span>
+                            </div>
+                            ` : ''}
+                            ${visitor.commentaires ? `
+                            <div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Commentaires:</span>
+                                <span class="detail-value">${visitor.commentaires}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const headers = [
+                'Date', 'Heure', 'Nom', 'Prénom', 'Sexe', 'Téléphone', 'Courriel', 
+                'Adresse', 'Ville', 'Code Postal', 'A accepté Jésus', 'Suivi', 
+                'Devenir membre', 'Communication', 'Comment nous a connu', 'Référence', 'Commentaires'
+            ];
+
+            const rows = filteredVisitors.map(v => [
+                v.date, v.heure || '', v.nom, v.prenom, v.sexe, v.telephone, v.courriel,
+                v.adresse, v.ville || '', v.code_postal, v.jesus, v.followup || '',
+                v.membre || '', v.communication, v.connaissance || '', v.reference || '', v.commentaires || ''
+            ]);
+
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `visiteurs_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+    </script>
+</body>
+</html>

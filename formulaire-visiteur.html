@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registre de Visiteurs - Famille MEGA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 4px solid #34495e;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .form-container {
+            padding: 50px 60px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 15px;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #34495e;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-left: 4px solid #2c3e50;
+            padding-left: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        label .required {
+            color: #c0392b;
+            margin-left: 3px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #bdc3c7;
+            background: white;
+            font-size: 15px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            background: #e9ecef;
+        }
+
+        .radio-option input[type="radio"],
+        .checkbox-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .radio-option label,
+        .checkbox-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .submit-btn {
+            background: #2c3e50;
+            color: white;
+            padding: 16px 50px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            background: #34495e;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+            font-size: 15px;
+        }
+
+        .followup-section {
+            display: none;
+            margin-top: 15px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .note {
+            background: #e8f4f8;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 30px 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Famille MEGA</h1>
+            <p>Formulaire de Registre de Visiteurs</p>
+        </div>
+
+        <div class="form-container">
+            <div id="success-msg" class="success-message"></div>
+
+            <div class="note">
+                Les informations recueillies sont confidentielles et utilisées uniquement pour mieux vous servir et rester en contact avec vous.
+            </div>
+            
+            <form id="visitor-form">
+                <!-- SECTION: INFORMATIONS PERSONNELLES -->
+                <div class="form-section">
+                    <h2 class="section-title">Informations Personnelles</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nom">Nom <span class="required">*</span></label>
+                            <input type="text" id="nom" name="nom" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prenom">Prénom <span class="required">*</span></label>
+                            <input type="text" id="prenom" name="prenom" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="adresse">Adresse complète <span class="required">*</span></label>
+                            <input type="text" id="adresse" name="adresse" required placeholder="Numéro, rue, appartement">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ville">Ville <span class="required">*</span></label>
+                            <input type="text" id="ville" name="ville" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="code_postal">Code Postal <span class="required">*</span></label>
+                            <input type="text" id="code_postal" name="code_postal" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telephone">Téléphone <span class="required">*</span></label>
+                            <input type="tel" id="telephone" name="telephone" required placeholder="(xxx) xxx-xxxx">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="courriel">Courriel <span class="required">*</span></label>
+                            <input type="email" id="courriel" name="courriel" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Sexe <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="homme" name="sexe" value="Homme" required>
+                                    <label for="homme">Homme</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="femme" name="sexe" value="Femme" required>
+                                    <label for="femme">Femme</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: INFORMATIONS SPIRITUELLES -->
+                <div class="form-section">
+                    <h2 class="section-title">Informations Spirituelles</h2>
+
+                    <div class="form-group">
+                        <label>Avez-vous déjà accepté Jésus-Christ comme votre Seigneur et Sauveur? <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="jesus_oui" name="jesus" value="Oui" required>
+                                <label for="jesus_oui">Oui</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="jesus_non" name="jesus" value="Non" required>
+                                <label for="jesus_non">Non</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="followup-section" id="jesus-followup">
+                        <label>Aimeriez-vous accepter Jésus-Christ dans votre vie?</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="followup_oui" name="followup" value="Oui, je suis prêt(e) maintenant">
+                                <label for="followup_oui">Oui, je suis prêt(e) maintenant</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="followup_non" name="followup" value="Non">
+                                <label for="followup_non">Non</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="followup_pas_maintenant" name="followup" value="Pas maintenant">
+                                <label for="followup_pas_maintenant">Pas maintenant</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="followup_parler" name="followup" value="J'aimerais en parler avec quelqu'un">
+                                <label for="followup_parler">J'aimerais en parler avec quelqu'un</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 25px;">
+                        <label>Aimeriez-vous devenir membre de notre église?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="membre_oui" name="membre" value="Oui">
+                                <label for="membre_oui">Oui</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="membre_non" name="membre" value="Non">
+                                <label for="membre_non">Non</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="membre_reflechir" name="membre" value="J'aimerais y réfléchir">
+                                <label for="membre_reflechir">J'aimerais y réfléchir</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: COMMENT NOUS AVEZ-VOUS CONNU -->
+                <div class="form-section">
+                    <h2 class="section-title">À Propos de Votre Visite</h2>
+
+                    <div class="form-group">
+                        <label for="connaissance">Comment avez-vous pris connaissance de notre église?</label>
+                        <textarea id="connaissance" name="connaissance" placeholder="Ami, famille, recherche internet, panneau publicitaire, etc."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reference">Personne de référence (Nom et téléphone de la personne qui vous a invité)</label>
+                        <input type="text" id="reference" name="reference" placeholder="Nom complet et numéro de téléphone">
+                    </div>
+                </div>
+
+                <!-- SECTION: PRÉFÉRENCES DE CONTACT -->
+                <div class="form-section">
+                    <h2 class="section-title">Préférences de Contact</h2>
+
+                    <div class="form-group">
+                        <label>Quel est le meilleur moyen de communiquer avec vous? <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="comm_tel" name="communication" value="Téléphone" required>
+                                <label for="comm_tel">Téléphone</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="comm_email" name="communication" value="Courriel" required>
+                                <label for="comm_email">Courriel</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="comm_both" name="communication" value="Les deux" required>
+                                <label for="comm_both">Les deux (Téléphone et Courriel)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: VOS COMMENTAIRES -->
+                <div class="form-section">
+                    <h2 class="section-title">Votre Opinion Nous Tient à Cœur</h2>
+
+                    <div class="form-group">
+                        <label for="commentaires">Partagez l'expérience de votre visite avec nous par vos commentaires ou suggestions</label>
+                        <textarea id="commentaires" name="commentaires" placeholder="Vos impressions, suggestions, ou tout autre commentaire..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Soumettre le Formulaire</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide Jesus followup section
+        document.querySelectorAll('input[name="jesus"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const followup = document.getElementById('jesus-followup');
+                followup.style.display = this.value === 'Non' ? 'block' : 'none';
+            });
+        });
+
+        // Handle single checkbox selection for followup
+        document.querySelectorAll('input[name="followup"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('input[name="followup"]').forEach(cb => {
+                        if (cb !== this) cb.checked = false;
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('visitor-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('fr-CA'),
+                heure: new Date().toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: new Date().toISOString()
+            };
+            
+            // Collect form data
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            // Collect followup checkboxes
+            const followupChecked = Array.from(document.querySelectorAll('input[name="followup"]:checked'))
+                .map(cb => cb.value);
+            data.followup = followupChecked.join(', ');
+
+            // Save to localStorage
+            let visitors = JSON.parse(localStorage.getItem('visitors') || '[]');
+            visitors.push(data);
+            localStorage.setItem('visitors', JSON.stringify(visitors));
+
+            // Simulate email notification
+            await sendEmailNotification(data);
+
+            // Show success message
+            const successMsg = document.getElementById('success-msg');
+            successMsg.innerHTML = `
+                <strong>Merci ${data.prenom} ${data.nom}!</strong><br>
+                Votre formulaire a été soumis avec succès. Un courriel de confirmation a été envoyé à ${data.courriel}.<br>
+                Nous sommes ravis de votre visite et espérons vous revoir bientôt.
+            `;
+            successMsg.style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            document.getElementById('jesus-followup').style.display = 'none';
+
+            // Scroll to success message
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Hide success message after 8 seconds
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 8000);
+        });
+
+        // Simulate email notification
+        async function sendEmailNotification(data) {
+            const message = `
+                Chère/Cher ${data.prenom} ${data.nom},
+
+                Nous sommes ravis que vous ayez visité Famille MEGA aujourd'hui. 
+                Votre présence nous a apporté une grande joie et nous espérons vous revoir très bientôt.
+                
+                Que Dieu vous bénisse abondamment!
+
+                Famille MEGA
+            `;
+            
+            console.log('📧 Email de confirmation envoyé à:', data.courriel);
+            console.log('Message:', message);
+            
+            // In production, integrate with email service API (SendGrid, Mailgun, etc.)
+            return new Promise(resolve => setTimeout(resolve, 500));
+        }
+    </script>
+</body>
+</html>
