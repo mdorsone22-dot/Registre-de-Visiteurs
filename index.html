@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registre de Visiteurs - Famille MEGA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav-header {
+            background: #2c3e50;
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+        }
+
+        .nav-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-tab.admin-only {
+            display: none;
+        }
+
+        .nav-tabs.show-admin .nav-tab.admin-only {
+            display: block;
+        }
+
+        .nav-tab {
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            background: #34495e;
+            border-bottom: 3px solid white;
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Common Styles */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 50px 60px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        label .required {
+            color: #c0392b;
+            margin-left: 3px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #bdc3c7;
+            background: white;
+            font-size: 15px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            background: #e9ecef;
+        }
+
+        .radio-option input[type="radio"],
+        .checkbox-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .radio-option label,
+        .checkbox-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .submit-btn {
+            background: #2c3e50;
+            color: white;
+            padding: 16px 50px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .submit-btn:hover {
+            background: #34495e;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+            font-size: 15px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f5c6cb;
+        }
+
+        .followup-section {
+            display: none;
+            margin-top: 15px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .note {
+            background: #e8f4f8;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        /* Admin Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-left: 4px solid #2c3e50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 13px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .visitor-card {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .visitor-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .visitor-card-header h3 {
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .visitor-date {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .visitor-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            padding: 8px 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #34495e;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .export-btn:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .visitor-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <div class="nav-content">
+            <div class="nav-title">Famille MEGA - Registre de Visiteurs</div>
+            <div class="nav-tabs" id="nav-tabs">
+                <button class="nav-tab active" onclick="switchPage('visitor')">Formulaire Visiteur</button>
+                <button class="nav-tab admin-only" onclick="switchPage('admin')">Administration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISITOR FORM PAGE -->
+    <div id="visitor-page" class="page active">
+        <div class="container">
+            <div id="success-msg" class="success-message"></div>
+
+            <div class="note">
+                Les informations recueillies sont confidentielles et utilisées uniquement pour mieux vous servir et rester en contact avec vous.
+            </div>
+            
+            <form id="visitor-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom <span class="required">*</span></label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prenom">Prénom <span class="required">*</span></label>
+                        <input type="text" id="prenom" name="prenom" required>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="adresse">Adresse complète <span class="required">*</span></label>
+                        <input type="text" id="adresse" name="adresse" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ville">Ville <span class="required">*</span></label>
+                        <input type="text" id="ville" name="ville" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="code_postal">Code Postal <span class="required">*</span></label>
+                        <input type="text" id="code_postal" name="code_postal" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telephone">Téléphone <span class="required">*</span></label>
+                        <input type="tel" id="telephone" name="telephone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courriel">Courriel <span class="required">*</span></label>
+                        <input type="email" id="courriel" name="courriel" required>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label>Sexe <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="homme" name="sexe" value="Homme" required>
+                                <label for="homme">Homme</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="femme" name="sexe" value="Femme" required>
+                                <label for="femme">Femme</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Avez-vous déjà accepté Jésus-Christ comme votre Seigneur et Sauveur? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="jesus_oui" name="jesus" value="Oui" required>
+                            <label for="jesus_oui">Oui</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="jesus_non" name="jesus" value="Non" required>
+                            <label for="jesus_non">Non</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-section" id="jesus-followup">
+                    <label>Aimeriez-vous accepter Jésus-Christ dans votre vie?</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="followup_oui" name="followup" value="Oui, je suis prêt(e) maintenant">
+                            <label for="followup_oui">Oui, je suis prêt(e) maintenant</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="followup_non" name="followup" value="Non">
+                            <label for="followup_non">Non</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="followup_pas_maintenant" name="followup" value="Pas maintenant">
+                            <label for="followup_pas_maintenant">Pas maintenant</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="followup_parler" name="followup" value="J'aimerais en parler avec quelqu'un">
+                            <label for="followup_parler">J'aimerais en parler avec quelqu'un</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Aimeriez-vous devenir membre de notre église?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="membre_oui" name="membre" value="Oui">
+                            <label for="membre_oui">Oui</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="membre_non" name="membre" value="Non">
+                            <label for="membre_non">Non</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="membre_reflechir" name="membre" value="J'aimerais y réfléchir">
+                            <label for="membre_reflechir">J'aimerais y réfléchir</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="connaissance">Comment avez-vous pris connaissance de notre église?</label>
+                    <textarea id="connaissance" name="connaissance"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="reference">Personne de référence (Nom et téléphone de la personne qui vous a invité)</label>
+                    <input type="text" id="reference" name="reference">
+                </div>
+
+                <div class="form-group">
+                    <label>Quel est le meilleur moyen de communiquer avec vous? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="comm_tel" name="communication" value="Téléphone" required>
+                            <label for="comm_tel">Téléphone</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="comm_email" name="communication" value="Courriel" required>
+                            <label for="comm_email">Courriel</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="comm_both" name="communication" value="Les deux" required>
+                            <label for="comm_both">Les deux (Téléphone et Courriel)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="commentaires">Votre Opinion Nous Tient à Cœur</label>
+                    <textarea id="commentaires" name="commentaires" placeholder="Partagez l'expérience de votre visite..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Soumettre le Formulaire</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="admin-page" class="page">
+        <div class="container">
+            <h2 class="page-title">Tableau de Bord - Administration</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Visiteurs</h3>
+                    <div class="number" id="total-visitors">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Cette Semaine</h3>
+                    <div class="number" id="week-visitors">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Nouveaux Convertis</h3>
+                    <div class="number" id="new-converts">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Futurs Membres</h3>
+                    <div class="number" id="potential-members">0</div>
+                </div>
+            </div>
+
+            <button class="export-btn" onclick="exportToCSV()">Exporter en CSV</button>
+
+            <div id="visitors-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let allVisitors = [];
+        let isAdminAuthenticated = false;
+
+        // Check URL parameters on page load
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('admin')) {
+                showAdminLogin();
+            }
+        });
+
+        // Show admin login
+        function showAdminLogin() {
+            const password = prompt('Mot de passe administrateur:');
+            if (password === 'admin123') {
+                isAdminAuthenticated = true;
+                document.getElementById('nav-tabs').classList.add('show-admin');
+                switchPage('admin');
+            } else if (password !== null) {
+                alert('Mot de passe incorrect!');
+                window.location.href = window.location.pathname; // Retour à la page visiteur
+            } else {
+                window.location.href = window.location.pathname; // Annuler
+            }
+        }
+
+        // Switch pages
+        function switchPage(page) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            if (page === 'visitor') {
+                document.querySelector('.nav-tab:first-child').classList.add('active');
+                document.getElementById('visitor-page').classList.add('active');
+                // Enlever ?admin de l'URL
+                if (window.location.search) {
+                    window.history.pushState({}, '', window.location.pathname);
+                }
+            } else {
+                // Vérifier authentification pour admin
+                if (!isAdminAuthenticated) {
+                    showAdminLogin();
+                    return;
+                }
+                document.querySelector('.nav-tab:last-child').classList.add('active');
+                document.getElementById('admin-page').classList.add('active');
+                loadAdminData();
+                // Ajouter ?admin à l'URL
+                if (!window.location.search.includes('admin')) {
+                    window.history.pushState({}, '', '?admin');
+                }
+            }
+        }
+
+        // Show/hide Jesus followup section
+        document.querySelectorAll('input[name="jesus"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const followup = document.getElementById('jesus-followup');
+                followup.style.display = this.value === 'Non' ? 'block' : 'none';
+            });
+        });
+
+        // Handle single checkbox selection for followup
+        document.querySelectorAll('input[name="followup"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('input[name="followup"]').forEach(cb => {
+                        if (cb !== this) cb.checked = false;
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('visitor-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('fr-CA'),
+                heure: new Date().toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: new Date().toISOString()
+            };
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            const followupChecked = Array.from(document.querySelectorAll('input[name="followup"]:checked'))
+                .map(cb => cb.value);
+            data.followup = followupChecked.join(', ');
+
+            let visitors = JSON.parse(localStorage.getItem('visitors') || '[]');
+            visitors.push(data);
+            localStorage.setItem('visitors', JSON.stringify(visitors));
+
+            const successMsg = document.getElementById('success-msg');
+            successMsg.innerHTML = `
+                <strong>Merci ${data.prenom} ${data.nom}!</strong><br>
+                Votre formulaire a été soumis avec succès.<br>
+                Nous sommes ravis de votre visite et espérons vous revoir bientôt.
+            `;
+            successMsg.style.display = 'block';
+            
+            this.reset();
+            document.getElementById('jesus-followup').style.display = 'none';
+
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 8000);
+        });
+
+        // Load admin data
+        function loadAdminData() {
+            allVisitors = JSON.parse(localStorage.getItem('visitors') || '[]');
+            updateStatistics();
+            displayVisitors();
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = allVisitors.length;
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-CA');
+            
+            const thisWeek = allVisitors.filter(v => v.date >= weekAgo).length;
+            const newConverts = allVisitors.filter(v => v.jesus === 'Non').length;
+            const potentialMembers = allVisitors.filter(v => v.membre === 'Oui').length;
+
+            document.getElementById('total-visitors').textContent = total;
+            document.getElementById('week-visitors').textContent = thisWeek;
+            document.getElementById('new-converts').textContent = newConverts;
+            document.getElementById('potential-members').textContent = potentialMembers;
+        }
+
+        // Display visitors
+        function displayVisitors() {
+            const container = document.getElementById('visitors-list');
+            
+            if (allVisitors.length === 0) {
+                container.innerHTML = '<div class="no-data">Aucun visiteur enregistré pour le moment.</div>';
+                return;
+            }
+
+            container.innerHTML = allVisitors
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .map(visitor => `
+                    <div class="visitor-card">
+                        <div class="visitor-card-header">
+                            <h3>${visitor.prenom} ${visitor.nom}</h3>
+                            <div class="visitor-date">${visitor.date} à ${visitor.heure || 'N/A'}</div>
+                        </div>
+                        <div class="visitor-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Sexe:</span>
+                                <span class="detail-value">${visitor.sexe}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Téléphone:</span>
+                                <span class="detail-value">${visitor.telephone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Courriel:</span>
+                                <span class="detail-value">${visitor.courriel}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Adresse:</span>
+                                <span class="detail-value">${visitor.adresse}, ${visitor.ville || ''} ${visitor.code_postal}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Accepté Jésus:</span>
+                                <span class="detail-value">${visitor.jesus}</span>
+                            </div>
+                            ${visitor.followup ? `<div class="detail-item">
+                                <span class="detail-label">Suivi:</span>
+                                <span class="detail-value">${visitor.followup}</span>
+                            </div>` : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Membre:</span>
+                                <span class="detail-value">${visitor.membre || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Communication:</span>
+                                <span class="detail-value">${visitor.communication}</span>
+                            </div>
+                            ${visitor.connaissance ? `<div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Comment connu:</span>
+                                <span class="detail-value">${visitor.connaissance}</span>
+                            </div>` : ''}
+                            ${visitor.reference ? `<div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Référence:</span>
+                                <span class="detail-value">${visitor.reference}</span>
+                            </div>` : ''}
+                            ${visitor.commentaires ? `<div class="detail-item" style="grid-column: 1/-1;">
+                                <span class="detail-label">Commentaires:</span>
+                                <span class="detail-value">${visitor.commentaires}</span>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const headers = [
+                'Date', 'Heure', 'Nom', 'Prénom', 'Sexe', 'Téléphone', 'Courriel', 
+                'Adresse', 'Ville', 'Code Postal', 'A accepté Jésus', 'Suivi', 
+                'Devenir membre', 'Communication', 'Comment connu', 'Référence', 'Commentaires'
+            ];
+
+            const rows = allVisitors.map(v => [
+                v.date, v.heure || '', v.nom, v.prenom, v.sexe, v.telephone, v.courriel,
+                v.adresse, v.ville || '', v.code_postal, v.jesus, v.followup || '',
+                v.membre || '', v.communication, v.connaissance || '', v.reference || '', v.commentaires || ''
+            ]);
+
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `visiteurs_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+    </script>
+</body>
+</html>
